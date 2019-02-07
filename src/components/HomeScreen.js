@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
 import { Location, Permissions, Constants } from 'expo';
+import MapScreen from './MapScreen';
 
 class HomeScreen extends PureComponent {
   state = {
-    location: null,
     errorMessage: null,
     destination: null
   };
@@ -24,27 +24,44 @@ class HomeScreen extends PureComponent {
   };
 
   _getLocationAsync = async () => {
-    const location = await Location.getCurrentPositionAsync({ enableHighAccuracy: true });
-    this.setState({ location, destination: { long: location.coords.longitude, lat: location.coords.latitude } });
+    const location = await Location.getCurrentPositionAsync({});
+    const { latitude, longitude, accuracy } = location.coords;
+    this.callDelta(latitude, longitude, accuracy);
+  };
+
+  callDelta = (lat, long, accuracy) => {
+    const oneDegreeOfLatitudeInMeters = 111.32 * 1000;
+    const latDelta = accuracy / oneDegreeOfLatitudeInMeters;
+    const longDelta = accuracy / (oneDegreeOfLatitudeInMeters * Math.cos(lat * (Math.PI / 180)));
+
+    this.setState({
+      destination: {
+        latitude: lat,
+        longitude: long,
+        latitudeDelta: 0.04355103563440821,
+        longitudeDelta: 0.028154464406668467
+      }
+    });
   };
 
   render() {
-    const { location, errorMessage, destination } = this.state;
-
-    console.log('location', location);
+    const { errorMessage, destination } = this.state;
     if (errorMessage)
       return (
         <View style={styles.container}>
           <Text>{errorMessage}</Text>
         </View>
       );
+
+    if (destination) {
+      return <MapScreen destination={this.state.destination} />;
+    }
+
     return (
       <View style={styles.container}>
         <TouchableOpacity style={styles.button} onPress={this._getLocationAsync}>
           <Text style={styles.label}>Start Walk</Text>
         </TouchableOpacity>
-
-        <Text>{destination && `${destination.long}, ${destination.lat}`}</Text>
       </View>
     );
   }
