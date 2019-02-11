@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, Text, View, Platform } from 'react-native';
 import { Location, Permissions, Constants } from 'expo';
-import MapScreen from './MapScreen';
+import Button from './Button';
 
 class HomeScreen extends PureComponent {
   state = {
@@ -24,20 +24,13 @@ class HomeScreen extends PureComponent {
   };
 
   _getLocationAsync = async () => {
-    const location = await Location.getCurrentPositionAsync({});
-    const { latitude, longitude, accuracy } = location.coords;
-    this.callDelta(latitude, longitude, accuracy);
-  };
-
-  callDelta = (lat, long, accuracy) => {
-    const oneDegreeOfLatitudeInMeters = 111.32 * 1000;
-    const latDelta = accuracy / oneDegreeOfLatitudeInMeters;
-    const longDelta = accuracy / (oneDegreeOfLatitudeInMeters * Math.cos(lat * (Math.PI / 180)));
+    const location = await Location.getCurrentPositionAsync();
+    const { latitude, longitude } = location.coords;
 
     this.setState({
       destination: {
-        latitude: lat,
-        longitude: long,
+        latitude,
+        longitude,
         latitudeDelta: 0.04355103563440821,
         longitudeDelta: 0.028154464406668467
       }
@@ -45,7 +38,7 @@ class HomeScreen extends PureComponent {
   };
 
   render() {
-    const { errorMessage, destination } = this.state;
+    const { errorMessage } = this.state;
     if (errorMessage)
       return (
         <View style={styles.container}>
@@ -53,15 +46,9 @@ class HomeScreen extends PureComponent {
         </View>
       );
 
-    if (destination) {
-      return <MapScreen destination={this.state.destination} />;
-    }
-
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.button} onPress={this._getLocationAsync}>
-          <Text style={styles.label}>Start Walk</Text>
-        </TouchableOpacity>
+        <Button />
       </View>
     );
   }
@@ -73,21 +60,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
-  },
-
-  button: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-
-  label: {
-    color: '#fff',
-    fontSize: 25,
-    fontWeight: '200'
   }
 });
 

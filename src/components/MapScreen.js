@@ -26,8 +26,10 @@ class MapScreen extends Component {
         region={isObjectNull(region) ? destination : region}
         mapType={'mutedStandard'}
         showsUserLocation={true}
-        showsScale={true}
+        followsUserLocation={true}
+        // loadingEnabled={true}
         onRegionChange={this.handleRegionChange}
+        // onUserLocationChange={this.handleLocationChange}
       >
         {/* <MapView.Marker
           coordinate={{
