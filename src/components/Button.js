@@ -8,7 +8,11 @@ class Button extends Component {
   };
 
   changeShape = () => {
-    console.log('pressed');
+    if (this.state.hasWalkStarted) {
+      this.props.navigation.navigate('Modal');
+      return;
+    }
+
     Animated.timing(this.state.borderRadiusAnimation, {
       toValue: 20,
       duration: 200

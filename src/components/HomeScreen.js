@@ -48,7 +48,7 @@ class HomeScreen extends PureComponent {
 
     return (
       <View style={styles.container}>
-        <Button />
+        <Button {...this.props} />
       </View>
     );
   }
