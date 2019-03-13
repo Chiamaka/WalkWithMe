@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity } from 'react-native';
-
 class Button extends Component {
   state = {
     borderRadiusAnimation: new Animated.Value(100),
