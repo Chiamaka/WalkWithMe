@@ -2,12 +2,13 @@ import React, { Component, Fragment } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, Platform } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Polyline from '@mapbox/polyline';
+import { Constants } from 'expo';
 import { openGoogleMaps } from '../helpers/MapUtils';
 
 const startLocation = '5.635664,-0.148345';
 const destination = '5.651329,-0.160118';
-const KEY = 'AIzaSyCTItkCMHIczDbpoTawOKg9aeY9MB3nDfw';
-const API = `https://maps.googleapis.com/maps/api/directions/json?origin=${startLocation}&destination=${destination}&mode=${'walking'}&key=${KEY}`;
+const { GOOGLE_MAP_KEY } = Constants.manifest.extra;
+const API = `https://maps.googleapis.com/maps/api/directions/json?origin=${startLocation}&destination=${destination}&mode=${'walking'}&key=${GOOGLE_MAP_KEY}`;
 
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
