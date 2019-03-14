@@ -5,8 +5,7 @@ import Button from './Button';
 
 class HomeScreen extends PureComponent {
   state = {
-    errorMessage: null,
-    destination: null
+    errorMessage: null
   };
 
   componentDidMount() {
@@ -21,20 +20,6 @@ class HomeScreen extends PureComponent {
     if (status !== 'granted') {
       this.setState({ errorMessage: "Sorry, without location turned on, we can't help you" });
     }
-  };
-
-  _getLocationAsync = async () => {
-    const location = await Location.getCurrentPositionAsync();
-    const { latitude, longitude } = location.coords;
-
-    this.setState({
-      destination: {
-        latitude,
-        longitude,
-        latitudeDelta: 0.04355103563440821,
-        longitudeDelta: 0.028154464406668467
-      }
-    });
   };
 
   render() {
