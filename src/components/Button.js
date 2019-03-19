@@ -21,9 +21,12 @@ class Button extends Component {
 
   _changeShape = () => {
     if (this.state.hasWalkStarted) {
-      this.props.navigation.navigate('Modal');
       this._getLocationAsync()
-        .then(origin => this.setState({ coords: { ...this.state.coords, origin } }))
+        .then(origin => {
+          this.setState({ coords: { ...this.state.coords, origin } }, () => {
+            this.props.navigation.navigate('Modal', { coords: this.state.coords });
+          });
+        })
         .catch(err => console.log('err', err));
     }
 
