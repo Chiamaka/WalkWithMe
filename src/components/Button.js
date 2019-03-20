@@ -1,49 +1,59 @@
 import React, { Component } from 'react';
 import { Animated, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Location } from 'expo';
+import { withContext } from '../context/LocationStore';
 
 class Button extends Component {
   state = {
     borderRadiusAnimation: new Animated.Value(100),
-    hasWalkStarted: false,
-    coords: {
-      origin: null,
-      destination: null
+    hasWalkStarted: false
+  };
+
+  getLocationAsync = async () => {
+    try {
+      const location = await Location.getCurrentPositionAsync();
+      const { latitude, longitude } = location.coords;
+      return { latitude, longitude };
+    } catch (err) {
+      console.error('err', err);
     }
   };
 
-  _getLocationAsync = async () => {
-    const location = await Location.getCurrentPositionAsync();
-    const { latitude, longitude } = location.coords;
+  addDestination = async () => {
+    try {
+      const { dispatch } = this.props.context;
+      const destination = await this.getLocationAsync();
+      dispatch({ type: 'ADD_DESTINATION', payload: destination });
+    } catch (err) {
+      console.error('err', err);
+    }
+  };
 
-    return { latitude, longitude };
+  addOrigin = async () => {
+    try {
+      const { dispatch } = this.props.context;
+      const origin = await this.getLocationAsync();
+      dispatch({ type: 'ADD_ORIGIN', payload: origin });
+      this.props.navigation.navigate('Modal');
+    } catch (err) {
+      console.error('err', err);
+    }
   };
 
   _changeShape = () => {
     if (this.state.hasWalkStarted) {
-      this._getLocationAsync()
-        .then(origin => {
-          this.setState({ coords: { ...this.state.coords, origin } }, () => {
-            this.props.navigation.navigate('Modal', { coords: this.state.coords });
-          });
-        })
-        .catch(err => console.log('err', err));
+      this.addOrigin();
+      return;
     }
 
     Animated.timing(this.state.borderRadiusAnimation, {
       toValue: 20,
       duration: 200
-    }).start(() => {
-      this.setState({ hasWalkStarted: true }, async () => {
-        const destination = await this._getLocationAsync();
-        this.setState({ coords: { ...this.state.coords, destination } });
-      });
-    });
+    }).start(() => this.setState({ hasWalkStarted: true }, this.addDestination));
   };
 
   render() {
     const { borderRadiusAnimation, hasWalkStarted } = this.state;
-
     return (
       <TouchableOpacity onPress={this._changeShape}>
         <Animated.View style={[styles.button, { borderRadius: borderRadiusAnimation }]}>
@@ -73,4 +83,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Button;
+export default withContext(Button);

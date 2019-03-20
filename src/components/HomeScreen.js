@@ -24,12 +24,13 @@ class HomeScreen extends PureComponent {
 
   render() {
     const { errorMessage } = this.state;
-    if (errorMessage)
+    if (errorMessage) {
       return (
         <View style={styles.container}>
           <Text>{errorMessage}</Text>
         </View>
       );
+    }
 
     return (
       <View style={styles.container}>

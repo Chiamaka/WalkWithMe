@@ -4,38 +4,23 @@ import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import Polyline from '@mapbox/polyline';
 import { Constants } from 'expo';
 import { openGoogleMaps } from '../helpers/MapUtils';
-const { GOOGLE_MAP_KEY } = Constants.manifest.extra;
+import { withContext } from '../context/LocationStore';
 
+const { GOOGLE_MAP_KEY } = Constants.manifest.extra;
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
-const LATITUDE_DELTA = 0.1;
+const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-
-const initialRegion = {
-  latitude: 5.635664,
-  longitude: -0.148345,
-  latitudeDelta: LATITUDE_DELTA,
-  longitudeDelta: LONGITUDE_DELTA
-};
 
 class MapScreen extends Component {
   state = {
-    region: {
-      latitude: null,
-      longitude: null,
-      latitudeDelta: null,
-      longtitudeDelta: null
-    },
     polylineCoords: null,
-    coords: null,
     markers: []
   };
 
   async componentDidMount() {
     try {
-      const { coords } = this.props.navigation.state.params;
-      const { destination, origin } = coords;
-
+      const { destination, origin } = this.props.context;
       const API = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&mode=${'walking'}&key=${GOOGLE_MAP_KEY}`;
       const res = await fetch(API);
       const resJson = await res.json();
@@ -47,7 +32,7 @@ class MapScreen extends Component {
           longitude: point[1]
         };
       });
-      this.setState({ polylineCoords, coords, markers });
+      this.setState({ polylineCoords, markers });
     } catch (error) {
       console.error('err', error);
     }
@@ -69,23 +54,20 @@ class MapScreen extends Component {
   }
 
   handleNavigate = () => {
-    const { origin, destination } = this.state.coords;
+    const { origin, destination } = this.props.context;
     const formattedOrigin = `${origin.latitude},${origin.longitude}`;
     const formattedDestination = `${destination.latitude},${destination.longitude}`;
     openGoogleMaps(formattedOrigin, formattedDestination);
   };
 
   render() {
-    const {
-      coords: { origin }
-    } = this.props.navigation.state.params;
-
+    const { destination } = this.props.context;
     return (
       <Fragment>
         <MapView
           provider={PROVIDER_GOOGLE}
           style={{ flex: 1 }}
-          region={{ ...origin, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }}
+          region={{ ...destination, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }}
           mapType={Platform.OS === 'android' ? 'mutedStandard' : 'standard'}
         >
           <MapView.Polyline coordinates={this.state.polylineCoords} strokeWidth={2} strokeColor={'#285dbf'} />
@@ -130,4 +112,4 @@ const styles = {
   }
 };
 
-export default MapScreen;
+export default withContext(MapScreen);
