@@ -1,8 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, Platform } from 'react-native';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import { MapView, Constants } from 'expo';
 import Polyline from '@mapbox/polyline';
-import { Constants } from 'expo';
 import { openGoogleMaps } from '../helpers/MapUtils';
 import { withContext } from '../context/LocationStore';
 
@@ -65,7 +64,6 @@ class MapScreen extends Component {
     return (
       <Fragment>
         <MapView
-          provider={PROVIDER_GOOGLE}
           style={{ flex: 1 }}
           region={{ ...destination, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA }}
           mapType={Platform.OS === 'android' ? 'mutedStandard' : 'standard'}

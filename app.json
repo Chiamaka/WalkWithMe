@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "WalkWithMe",
-    "slug": "WalkWithMe",
+    "slug": "walk-with-me",
     "privacy": "public",
     "sdkVersion": "32.0.0",
     "platforms": ["ios", "android"],
@@ -20,8 +20,7 @@
     "ios": {
       "supportsTablet": true
     },
-    "extra": {
-      
-    }
+    "extra": {},
+    "description": "WalkWithMe is a walk buddy. He remembers the route you’ve walked and routes you when you want to walk back."
   }
 }
